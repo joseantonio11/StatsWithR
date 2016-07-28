@@ -1,5 +1,6 @@
 ---
 title: "Exploring the BRFSS data"
+author: "jose Antonio (joseantonio@me.com)"
 output: 
   html_document: 
     fig_height: 4
@@ -7,70 +8,189 @@ output:
     theme: spacelab
 ---
 
-## Setup
+Github: [Project  Exploring the BRFSS data](https://github.com/joseantonio11/StatsWithR/tree/master/01_intro_data_prob)
+
+
+# SUMMARY:
+The Behavioral Risk Factor Surveillance System (BRFSS) is a collaborative project between all of the states in the United States (US) and participating US territories and the Centers for Disease Control and Prevention (CDC).
+The BRFSS is administered and supported by CDC's Population Health Surveillance Branch, under the Division of Population Health at the National Center for Chronic Disease Prevention and Health Promotion. BRFSS is an ongoing surveillance system designed to measure behavioral risk factors for the non-institutionalized adult population (18 years of age and older) residing in the US. 
+
+The BRFSS was initiated in 1984, with 15 states collecting surveillance data on risk behaviors through monthly telephone interviews. Over time, the number of states participating in the survey increased; by 2001, 50 states, the District of Columbia, Puerto Rico, Guam, and the US Virgin Islands were participating in the BRFSS. Today, all 50 states, the District of Columbia, Puerto Rico, and Guam collect data annually and American Samoa, Federated States of Micronesia, and Palau collect survey data over a limited point- in-time (usually one to three months). In this document, the term "state" is used to refer to all areas participating in BRFSS, including the District of Columbia, Guam, and the Commonwealth of Puerto Rico.
+
+The BRFSS objective is to collect uniform, state-specific data on preventive health practices and risk behaviors that are linked to chronic diseases, injuries, and preventable infectious diseases that affect the adult population. Factors assessed by the BRFSS in 2013 include tobacco use, HIV/AIDS knowledge and prevention, exercise, immunization, health status, healthy days - health-related quality of life, health care access, inadequate sleep, hypertension awareness, cholesterol awareness, chronic health conditions, alcohol consumption, fruits and vegetables consumption, arthritis burden, and seatbelt use. Since 2011, BRFSS conducts both landline telephone- and cellular telephone-based surveys. 
+
+In conducting the BRFSS landline telephone survey, interviewers collect data from a randomly selected adult in a household. In conducting the cellular telephone version of the BRFSS questionnaire, interviewers collect data from an adult who participates by using a cellular telephone and resides in a private residence or college housing. Health characteristics estimated from the BRFSS pertain to the non-institutionalized adult population, aged 18 years or older, who reside in the US. In 2013, additional question sets were included as optional modules to provide a measure for several childhood health and wellness indicators, including asthma prevalence for people aged 17 years or younger." 
 
 ### Load packages
 
 ```{r load-packages, message = FALSE}
 library(ggplot2)
 library(dplyr)
+options(dplyr.width = Inf)
 ```
 
 ### Load data
 
-Make sure your data and R Markdown files are in the same directory. When loaded
-your data file will be called `brfss2013`. Delete this note when before you submit 
-your work. 
+The data file brfss2013.Rdata are stored in default directory of RStudio.
+The R Markdown files are in the same directory (intro_data_prob_project.Rmd, intro_data_prob_project.html).
 
-```{r load-data}
-#load("brfss2013.RData")
+The data will be stored in the global environment dataframe called "brfss2013" with 491775 observations and 330 variables.
+
+```{r, echo=TRUE}
+getwd()
+load("brfss2013.RData")
+dim(brfss2013)
 ```
-
-
-
-* * *
 
 ## Part 1: Data
 
+We want to know if this study is observational or experimental? How the sample data was collected? If Random Sampling was used? We want to know about the limitations and potentials in terms of inference? If it is generalizable and if we can prove causality? 
 
-* * *
+As the codebook explains, the sample data is collected by telephone interviews through sampling from adult (aged 18 years or older), select randomly in a household, moreover, from interviewers collected from adult using a cellular telephone that resides in a private residende or college housing.
+
+The study is Observational oposed to Experiment(al), since it consists of survey from telephone interviews and some voluntary might be reluctant in answer the interviwed (if suffer from desease which do not wish to see showed), so there might be an inherent bias involved. The sample is representative considering the size (491775) of observations and We can generalize conclusions (not causality). Due to the fact that this has been collected retrospectively we can only imply correlations, not causality.
 
 ## Part 2: Research questions
 
-**Research quesion 1:**
+## Research question 1:
+We want explore if Smoke is bad for health, and if non-smokers has better health conditions than smokers.
+Lets use the variable Genhlth (general Health) from Section 1 (with classifications 1-Excellent,2-Very Good, 3-Good, 4-Fair, 5 - Poor).
+And the variables Smoke from Section 9 (Tobacco Use).
+- smoke100: Smoked At Least 100 Cigarettes
+- smokday2: Frequency Of Days Now Smoking
+- other variables from Section 9: stopsmk2: Stopped Smoking In Past 12 Months, lastsmk2: Interval Since Last Smoked, usenow3: Use Of Smokeless Tobacco Products).
 
-**Research quesion 2:**
+## Research question 2:
+We want explore if the People that don't drink constantly (in last 30 days) are in greater number and has better conditions and is majority when compared with drankers. 
+As in the Research 1, let use the variable Genhlth (general Health) from Section 1 (with classifications 1-Excellent,2-Very Good, 3-Good, 4-Fair, 5 - Poor).
+We will use the Section 10 - Alcohol Consumption and the variables:
+- alcday5: Days In Past 30 Had Alcoholic Beverage
+- avedrnk2: Avg Alcoholic Drinks Per Day In Past 30
+- drnk3ge5: Binge Drinking
+- maxdrnks: Most Drinks On Single Occasion Past 30 Days
 
-**Research quesion 3:**
+## Research question 3:
+Based on Main Survey Section 2 - Health Days - Health-Related Quality of Life, our intention is verify the general conditions of health based on variables of this section compared with variable Genhlth (general Health) from Section 1 (with classifications 1-Excellent,2-Very Good, 3-Good, 4-Fair, 5 - Poor).
+Health days variables from Section 2:
+- physhlth: Number Of Days Physical Health Not Good
+- menthlth: Number Of Days Mental Health Not Good
+- poorhlth: Poor Physical Or Mental Health
 
-
-* * *
 
 ## Part 3: Exploratory data analysis
 
-NOTE: Insert code chunks as needed by clicking on the "Insert a new code chunk" 
-button (green button with orange arrow) above. Make sure that your code is visible
-in the project you submit. Delete this note when before you submit your work.
+## - Research Question 1
+We want explore if Smoke is bad for health, and if is non-smokers has better health conditions than smokers.
+Lets use the variable Genhlth (general Health) from Section 1 (with classifications 1-Excellent,2-Very Good, 3-Good, 4-Fair, 5 - Poor).
+And the variables Smoke from Section 9 (Tobacco Use).
+- smoke100: Smoked At Least 100 Cigarettes
+- smokday2: Frequency Of Days Now Smoking
 
-**Research quesion 1:**
+* Creating a subset of data
 
-```{r}
-
+```{r, echo=TRUE}
+vars <- names(brfss2013) %in% c("genhlth","smoke100","smokday2")
+subdata <- brfss2013[vars]
+smoke1 <- subdata %>% dplyr::filter(smoke100 %in% c("Yes","No"))
+## creating the plot
+g <- ggplot(smoke1,aes(x = smoke100,fill = smoke100)) 
+g <- g + geom_bar() + facet_grid(~genhlth)
+g
 ```
 
+### Conclusion Research Question 1
+
+The Graphic shows that for the majority classified as "excellent", "very good" and "good", non-smokers have better health than smokers. However, it not True for "Fair" and "Poor" (more smoke, less health).
 
 
-**Research quesion 2:**
-
-```{r}
-
+## - Research Question 2
+We want explore if the People that don't drink constantly (in last 30 days) are in greater number and has better conditions and is majority when compared with drankers. 
+As in the Research 1, let use the variable Genhlth (general Health) from Section 1 (with classifications 1-Excellent,2-Very Good, 3-Good, 4-Fair, 5 - Poor).
+We will use the Section 10 - Alcohol Consumption and the variables:
+- alcday5: Days In Past 30 Had Alcoholic Beverage
+- avedrnk2: Avg Alcoholic Drinks Per Day In Past 30
+- drnk3ge5: Binge Drinking
+- maxdrnks: Most Drinks On Single Occasion Past 30 Days
+ 
+```{r,echo=TRUE} 
+vars1 <- names(brfss2013) %in% c("genhlth","alcday5", "avedrnk2", "drnk3ge5", "maxdrnks")
+subdata1 <- brfss2013[vars1]
+alcohol1 <- subdata1 %>% dplyr::filter(!is.na(alcday5))
+## plotting
+g <- ggplot(alcohol1,aes(x = alcday5,fill = alcday5)) 
+g <- g + geom_bar() + facet_grid(~genhlth)
+g 
 ```
 
+The previous Graphic shows that the majority of people don't drink (line in 0 value) in last 30 days, has great % of people that drink but that has good health (classified as Excellent, Very Good and Good). 
+The quantities of People that dont drink and have poor health are minority.
 
-
-**Research quesion 3:**
-
-```{r}
-
+```{r, echo=TRUE}
+alcohol2 <- subdata1 %>% dplyr::filter(!is.na(avedrnk2))
+g <- ggplot(alcohol2,aes(x = avedrnk2,fill = avedrnk2)) 
+g <- g + geom_bar() + facet_grid(~genhlth)
+g 
 ```
 
+The previous graphic show the average of drinks per day in past 30 days, and the people that don't drink and have great health is the majority (line in 0 value), but there is a potential quantity of people that drink.
+
+```{r, echo=TRUE}
+alcohol3 <- subdata1 %>% dplyr::filter(!is.na(drnk3ge5))
+g <- ggplot(alcohol3,aes(x = drnk3ge5,fill = drnk3ge5)) 
+g <- g + geom_bar() + facet_grid(~genhlth)
+g 
+```
+
+The previous graphic show that the People that have "Excellent, Very Good, Good" health classification, are the majority that don't bing drinking, but are the majority that bing drinking. The Fair and Poor health classification, are minority that bing drinking.
+
+### Conclusion Research Question 2
+The 3 graphics show that there a lot of People that have Excellent, Very Good and Good health, and that drink constantly. The minority, with bad health (Fair and Poor) dont drink lot (as expected).
+
+## Research Question 3
+Based on Main Survey Section 2 - Health Days - Health-Related Quality of Life, our intention is verify the general conditions of health based on variables of this section compared with variable Genhlth (general Health) from Section 1 (with classifications 1-Excellent,2-Very Good, 3-Good, 4-Fair, 5 - Poor).
+Health days variables from Section 2:
+- physhlth: Number Of Days Physical Health Not Good
+- menthlth: Number Of Days Mental Health Not Good
+- poorhlth: Poor Physical Or Mental Health
+
+
+### Number Of Days Physical Health Not Good
+(Now thinking about your physical health, which includes physical illness and injury, for how many days during the past 30 days was your physical health not good?)
+```{r,echo=TRUE}
+### physhlth: Number Of Days Physical Health Not Good 
+vars4 <- names(brfss2013) %in% c("genhlth","physhlth")
+subdat4 <- brfss2013[vars4]
+subdat4 <- subdat4 %>% dplyr::filter(!is.na(physhlth))
+g <- ggplot(subdat4, aes(x = as.factor(genhlth))) + geom_bar()
+g
+```
+The previous graphic show that there is a lot of people with small health problems in last 30 days. The majority enjoy Excellent, Very Good and Good Health.
+
+
+### Number Of Days Mental Health Not Good 
+(Now thinking about your mental health, which includes stress, depression, and problems with emotions, for how many days during the past 30 days was your mental health not good?)
+```{r,echo=TRUE}
+### menthlth: Number Of Days Mental Health Not Good
+vars5 <- names(brfss2013) %in% c("genhlth","menthlth")
+subdat5 <- brfss2013[vars5]
+subdat5 <- subdat5 %>% dplyr::filter(!is.na(menthlth))
+g <- ggplot(subdat5, aes(x = as.factor(genhlth))) + geom_bar()
+g
+```
+The previous graphic show that there is a lot of people with stress, depression and problems emotions.The majority enjoy Excellent, Very Good and Good Health (with small health problems).
+
+### Poor Physical Or Mental Health 
+(During the past 30 days, for about how many days did poor physical or mental health keep you from doing your usual activities, such as self-care, work, or recreation?)
+```{r, echo=TRUE}
+## poorhlth: Poor Physical Or Mental Health 
+vars6 <- names(brfss2013) %in% c("genhlth","poorhlth")
+subdat6 <- brfss2013[vars6]
+subdat6 <- subdat6 %>% dplyr::filter(!is.na(poorhlth))
+g <- ggplot(subdat6, aes(x = as.factor(genhlth))) + geom_bar()
+g
+```
+The previous graphic show that there is a lot of people with stress, depression and problems emotions.The majority enjoy Excellent, Very Good and Good Health (with small health problems).
+
+### Conclusion Research Question 3
+The 3 graphics show that there a lot of People that lost  days in your life due of some kind of Physical or Mental Health. This show that, in modern life, even if you have good health, sometime you will always face little problems like headache, fatigue or depression.
+ 
